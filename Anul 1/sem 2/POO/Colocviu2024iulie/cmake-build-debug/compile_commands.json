@@ -1,0 +1,32 @@
+[
+{
+  "directory": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Colocviu2024iulie.dir\\main.cpp.obj -c C:\\Users\\Alexandra\\CLionProjects\\Colocviu2024iulie\\main.cpp",
+  "file": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/main.cpp",
+  "output": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/Colocviu2024iulie.dir/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Colocviu2024iulie.dir\\Item.cpp.obj -c C:\\Users\\Alexandra\\CLionProjects\\Colocviu2024iulie\\Item.cpp",
+  "file": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/Item.cpp",
+  "output": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/Colocviu2024iulie.dir/Item.cpp.obj"
+},
+{
+  "directory": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Colocviu2024iulie.dir\\Zid.cpp.obj -c C:\\Users\\Alexandra\\CLionProjects\\Colocviu2024iulie\\Zid.cpp",
+  "file": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/Zid.cpp",
+  "output": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/Colocviu2024iulie.dir/Zid.cpp.obj"
+},
+{
+  "directory": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Colocviu2024iulie.dir\\Turn.cpp.obj -c C:\\Users\\Alexandra\\CLionProjects\\Colocviu2024iulie\\Turn.cpp",
+  "file": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/Turn.cpp",
+  "output": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/Colocviu2024iulie.dir/Turn.cpp.obj"
+},
+{
+  "directory": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Colocviu2024iulie.dir\\Robot.cpp.obj -c C:\\Users\\Alexandra\\CLionProjects\\Colocviu2024iulie\\Robot.cpp",
+  "file": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/Robot.cpp",
+  "output": "C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/Colocviu2024iulie.dir/Robot.cpp.obj"
+}
+]
