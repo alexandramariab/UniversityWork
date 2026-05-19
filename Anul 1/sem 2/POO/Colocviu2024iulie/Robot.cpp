@@ -32,7 +32,7 @@ void RobotAerian::print(std::ostream &os) const {
        << ", Nivel: " << nivel
        << ", Viata: " << viata
        << ", Damage: " << damage
-       << ", Autonomie: " << autonomieZbor << " min"
+       << ", Autonomie: " << autonomieZbor << " ore"
        << ", Cost Upgrade urmator: " << getCostUpgrade() << " puncte]";
 }
 
