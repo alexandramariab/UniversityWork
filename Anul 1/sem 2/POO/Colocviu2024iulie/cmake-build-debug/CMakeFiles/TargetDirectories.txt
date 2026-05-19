@@ -1,3 +1,0 @@
-C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/Colocviu2024iulie.dir
-C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Alexandra/CLionProjects/Colocviu2024iulie/cmake-build-debug/CMakeFiles/rebuild_cache.dir
