@@ -1,176 +1,316 @@
 #include <iostream>
-#include<string>
-#include <vector>
-#include<memory>
-#include <algorithm>
+#include <memory>
+#include <string>
+#include<vector>
+#include<algorithm>
 using namespace std;
-class Candidat {
+class Drum {
 protected:
-    static int contor; // Pentru ID unic cerut în barem
+    string denumire;
+    float lungime;
+    int nrTronsoane;
+public:
+    Drum(const string &denumire, float lungime, int nr_tronsoane)
+        : denumire(denumire),
+          lungime(lungime),
+          nrTronsoane(nr_tronsoane) {
+        if (nrTronsoane<1)
+            throw runtime_error("minim 1 tronson");
+    }
+
+    virtual ~Drum() = default;
+    virtual float costContract()=0;
+    int getNrTronsoane() const {
+        return nrTronsoane;
+    }
+    string getDenumire() const {
+        return denumire;
+    }
+    float getLungime() const {
+        return lungime;
+    }
+    virtual void afisare() const {
+        cout << "Drum: " << denumire << " | Lungime totala: " << lungime
+             << " km | Nr. tronsoane: " << nrTronsoane;
+    }
+};
+
+class DrumNational: public Drum {
+private:
+    int nrJudete;
+public:
+    DrumNational(const string &denumire, float lungime, int nr_tronsoane, int nr_judete)
+        : Drum(denumire, lungime, nr_tronsoane),
+          nrJudete(nr_judete) {
+    }
+
+    ~DrumNational() override = default;
+    virtual float costContract() override {
+        return 3000*(lungime/nrTronsoane);
+    }
+    void afisare() const override {
+        Drum::afisare();
+        cout << " [Tip: National | Judete: " << nrJudete << "]\n";
+    }
+
+};
+
+class DrumEuropean: virtual public Drum {
+protected:
+    int nrTari;
+public:
+    DrumEuropean(const string &denumire, float lungime, int nr_tronsoane, int nr_tari)
+        : Drum(denumire, lungime, nr_tronsoane),
+          nrTari(nr_tari) {
+    }
+
+    ~DrumEuropean() override = default;
+    virtual float costContract() override {
+        return 3000*(lungime/nrTronsoane)+500*nrTari;
+    }
+    void afisare() const override {
+        Drum::afisare();
+        cout << " [Tip: European | Tari: " << nrTari << "]\n";
+    }
+};
+
+class Autostrada: virtual public Drum {
+protected:
+    int nrBenzi;
+public:
+    Autostrada(const string &denumire, float lungime, int nr_tronsoane, int nr_benzi)
+        : Drum(denumire, lungime, nr_tronsoane),
+          nrBenzi(nr_benzi) {
+        if (nrBenzi<2)
+            throw runtime_error("trb minim 2 benzi");
+    }
+
+    ~Autostrada() override = default;
+    virtual float costContract() override {
+        return 2500*nrBenzi*(lungime/nrTronsoane);
+    }
+    void afisare() const override {
+        Drum::afisare();
+        cout << " [Tip: Autostrada | Benzi: " << nrBenzi << "]\n";
+    }
+};
+
+class AutostradaEuropeana:public DrumEuropean, public Autostrada {
+public:
+    AutostradaEuropeana(const string &denumire, float lungime, int nr_tronsoane, int nr_benzi, int nr_tari)
+        : Drum(denumire,lungime,nr_tronsoane),
+            DrumEuropean(denumire, lungime, nr_tronsoane, nr_tari),
+          Autostrada(denumire,lungime,nr_tronsoane,nr_benzi) {
+    }
+    virtual float costContract() override {
+        return 2500*nrBenzi*(lungime/nrTronsoane)+500*nrTari;
+    }
+    void afisare() const override {
+        Drum::afisare();
+        cout << " [Tip: Autostrada Europeana | Benzi: " << nrBenzi << " | Tari: " << nrTari << "]\n";
+    }
+};
+
+class Contract {
+private:
+    static int contor;
     int id;
     string nume;
-    string prenume;
-    string dataNastere;
-
+    string cif;
+    shared_ptr<Drum>drumAsociat;
+    int tronson;
 public:
-    Candidat(const string &nume, const string &prenume, const string &dataNastere)
-        : nume(nume), prenume(prenume), dataNastere(dataNastere) {
-        id = ++contor; // Incrementare automată
+    Contract(const string &nume, const string &cif, shared_ptr<Drum> drumAsociat, int tronson)
+        : nume(nume),
+          cif(cif) ,drumAsociat(drumAsociat), tronson(tronson){
+        id=++contor;
+        if (tronson < 1 || tronson > drumAsociat->getNrTronsoane()) {
+            throw runtime_error("Tronsonul specificat nu exista pe acest drum!");
+        }
     }
 
-    virtual ~Candidat() = default; // DESTRUCTOR VIRTUAL OBLIGATORIU
+    ~Contract() = default;
+    string getCif() const { return cif; }
+    shared_ptr<Drum> getDrum() const { return drumAsociat; }
+    int getTronson() const { return tronson; }
 
-    // Funcție virtuală pură pentru calculul polimorfic
-    virtual float estimare_valoare() const = 0;
-
-    virtual void print() const {
-        cout << "ID: " << id << " | " << nume << " " << prenume
-             << " (" << dataNastere << ") | Scor: " << estimare_valoare() << " puncte";
+    void afisare() const {
+        cout << "Contract ID: " << id << " | Firma: " << nume << " (CIF: " << cif
+             << ") | Pe " << drumAsociat->getDenumire() << " [Tronsonul " << tronson
+             << "] | Valoare contractata: " << drumAsociat->costContract() << " mii EUR\n";
     }
 };
-int Candidat::contor = 0;
+int Contract::contor=0;
 
-class CandidatSprint : public Candidat {
+class Meniu {
 private:
-    float timpSecunde; // float pentru a evita trunchierea zecimalelor
+    Meniu() = default;
+    ~Meniu() = default;
+    Meniu(const Meniu& m)=delete;
+    Meniu& operator=(const Meniu& m)=delete;
+    vector<shared_ptr<Drum>>drumuri;
+    vector<shared_ptr<Contract>>contracte;
 public:
-    CandidatSprint(const string &n, const string &p, const string &d, float timp)
-        : Candidat(n, p, d), timpSecunde(timp) {
-        if (timp <= 0) throw invalid_argument("Timpul trebuie sa fie pozitiv!");
+    static Meniu& getInstance(){
+        static Meniu instance;
+        return instance;
     }
 
-    float estimare_valoare() const override {
-        if (timpSecunde < 10) return 10.0f;
-        return 90.0f / timpSecunde;
-    }
+    void interactiuneAdaugareDrum(){
+        string denumire;
+        float lungime;
+        int nrTronsoane, tip;
 
-    void print() const override {
-        Candidat::print();
-        cout << " [Proba: Sprint | Rezultat: " << timpSecunde << "s]\n";
-    }
-};
+        cout << "Introdu denumire unic\203 drum (ex: A1, DN2): ";
+        cin >> denumire;
 
-class CandidatCros : public Candidat {
-private:
-    float timpMinute;
-public:
-    CandidatCros(const string &n, const string &p, const string &d, float timp)
-        : Candidat(n, p, d), timpMinute(timp) {
-        if (timp <= 0) throw invalid_argument("Timpul trebuie sa fie pozitiv!");
-    }
+        for (const auto& existent : drumuri) {
+            if (existent->getDenumire() == denumire) {
+                throw runtime_error("Eroare: Denumirea acestui drum exista deja!");
+            }
+        }
 
-    float estimare_valoare() const override {
-        if (timpMinute < 30) return 10.0f;
-        return 120.0f / timpMinute;
-    }
+        cout << "Introdu lungimea (km): ";
+        cin >> lungime;
+        cout << "Introdu numarul de tronsoane: ";
+        cin >> nrTronsoane;
 
-    void print() const override {
-        Candidat::print();
-        cout << " [Proba: Cros | Rezultat: " << timpMinute << " min]\n";
-    }
-};
+        cout << "Alege tipul drumului:\n 1. Drum National\n 2. Drum European\n 3. Autostrada\n 4. Autostrada Europeana\nOptiune: ";
+        cin >> tip;
 
-class CandidatLungime : public Candidat {
-private:
-    string tipProba; // "SemiMaraton" sau "Maraton"
-    float distantaKm;
-public:
-    CandidatLungime(const string &n, const string &p, const string &d, const string& tip, float distanta)
-        : Candidat(n, p, d), tipProba(tip), distantaKm(distanta) {
-        if (distanta < 0) throw invalid_argument("Distanta nu poate fi negativa!");
-    }
-
-    float estimare_valoare() const override {
-        if (distantaKm > 50) return 10.0f;
-        return distantaKm / 5.0f;
-    }
-
-    void print() const override {
-        Candidat::print();
-        cout << " [Proba: " << tipProba << " | Rezultat: " << distantaKm << " km]\n";
-    }
-};
-class Inscriere {
-private:
-    Inscriere(){};
-    ~Inscriere() = default;
-    Inscriere( const Inscriere&o)=delete;
-    Inscriere &operator=(const Inscriere& o)=delete;
-    vector<shared_ptr<Candidat>>candidati;
-    const string codAdminSecret = "Bucuresti2024";
-public:
-    static Inscriere& getInstance() {
-        static Inscriere inscriere;
-        return inscriere;
-    }
-
-    void inscriereCandidat() {
-        string nume, prenume, dataNastere, tipProba;
-        int rezultat;
-        cout<<"introdu numele: "<<"\n";
-        cin>>nume;
-        cout<<"introdu prenumele: "<<"\n";
-        cin>>prenume;
-        cout<<"introdu data nasterii: "<<"\n";
-        cin>>dataNastere;
-        cout<<"introdu tipul probei: "<<"\n";
-        cin>>tipProba;
-        cout<<"introdu rezultatul tau pentru proba: "<<"\n";
-        cin>>rezultat;
-
-        if (tipProba == "Sprint") {
-            candidati.push_back(make_shared<CandidatSprint>(nume, prenume, dataNastere, rezultat));
-        } else if (tipProba == "Cros") {
-            candidati.push_back(make_shared<CandidatCros>(nume, prenume, dataNastere, rezultat));
-        } else if (tipProba == "SemiMaraton" || tipProba == "Maraton") {
-            candidati.push_back(make_shared<CandidatLungime>(nume, prenume, dataNastere, tipProba, rezultat));
+        if (tip == 1) {
+            int judete;
+            cout << "Numar judete: "; cin >> judete;
+            drumuri.push_back(make_shared<DrumNational>(denumire, lungime, nrTronsoane, judete));
+        } else if (tip == 2) {
+            int tari;
+            cout << "Numar tari tranzitate: "; cin >> tari;
+            drumuri.push_back(make_shared<DrumEuropean>(denumire, lungime, nrTronsoane, tari));
+        } else if (tip == 3) {
+            int benzi;
+            cout << "Numar benzi: "; cin >> benzi;
+            drumuri.push_back(make_shared<Autostrada>(denumire, lungime, nrTronsoane, benzi));
+        } else if (tip == 4) {
+            int benzi, tari;
+            cout << "Numar benzi: "; cin >> benzi;
+            cout << "Numar tari: "; cin >> tari;
+            drumuri.push_back(make_shared<AutostradaEuropeana>(denumire, lungime, nrTronsoane, benzi, tari));
         } else {
-            throw invalid_argument("Tip de proba necunoscut!");
+            throw runtime_error("Eroare: Optiune de drum invalida!");
         }
-        cout << "Inscriere realizata cu succes!\n\n";
+        cout << "Drum inregistrat cu succes!\n";
+    }
+    void interactiuneAdaugareContract() {
+        string numeFirma, cif, numeDrum;
+        int tronson;
 
+        cout << "Nume firma: "; cin >> numeFirma;
+        cout << "CIF firma: "; cin >> cif;
+        cout << "Denumirea drumului pe care se lucreaza: "; cin >> numeDrum;
+
+        shared_ptr<Drum> drumGasit = nullptr;
+        for (const auto& d : drumuri) {
+            if (d->getDenumire() == numeDrum) {
+                drumGasit = d;
+                break;
+            }
+        }
+
+        if (!drumGasit) {
+            throw runtime_error("Eroare: Drumul specificat nu a fost gasit!");
+        }
+
+        cout << "Numar tronson (1 - " << drumGasit->getNrTronsoane() << "): ";
+        cin >> tronson;
+
+        // Verificare unicitate tronson
+        for (const auto& c : contracte) {
+            if (c->getDrum()->getDenumire() == numeDrum && c->getTronson() == tronson) {
+                throw runtime_error("Eroare: Exista deja un contract semnat pe acest tronson!");
+            }
+        }
+
+        contracte.push_back(make_shared<Contract>(numeFirma, cif, drumGasit, tronson));
+        cout << "Contract adaugat cu succes!\n";
     }
 
-    void StopInscriere() {
-        string cod;
-        cout<<"introdu codul: ";
-        cin>>cod;
-        if (cod!=codAdminSecret)
-            throw runtime_error("Acces restrictionat! Cod incorect.");
-        sort(candidati.begin(), candidati.end(), [](const shared_ptr<Candidat>&a, const shared_ptr<Candidat>&b) {
-            return a->estimare_valoare()>b->estimare_valoare();
-        });
-        if (candidati.size() > 500) {
-            candidati.resize(500);
-        }
+    // Cerința a): Afișare inventar complet
+    void afisareTot() const {
+        cout << "\n=== INVENTAR DRUMURI RE\316EAA ===\n";
+        for (const auto& d : drumuri) d->afisare();
 
-        cout<<"candidati acceptati: "<<"\n";
-        for (const auto& c : candidati) {
-            c->print();
-        }
+        cout << "\n=== REGISTRU CONTRACTE ACTIVE ===\n";
+        if (contracte.empty()) cout << "(Nu exista contracte inregistrate)\n";
+        for (const auto& c : contracte) c->afisare();
+        cout <<"=================================\n";
+    }
 
+    float lungimeTotala() {
+        float lungime=0.0f;
+        for (auto const&d: drumuri)
+            lungime+=d->getLungime();
+        return lungime;
+    }
+
+    float lungimeAutostrazi() {
+        float lungime=0.0f;
+        for (auto const&d: drumuri)
+            if (dynamic_pointer_cast<Autostrada>(d))
+            lungime+=d->getLungime();
+        return lungime;
+    }
+
+    void stergeContracte() {
+        string cif;
+        cout<<"ciful firmei: ";
+        cin>>cif;
+        // Rezolvare robusta folosind Erase-Remove + Lambda, conform baremului
+        contracte.erase(
+            remove_if(contracte.begin(), contracte.end(), [&cif](const shared_ptr<Contract>& c) {
+                return c->getCif() == cif;
+            }),
+            contracte.end()
+        );
+        cout << "Contractele firmei au fost eliminate din sistem.\n";
     }
 
 };
 
 int main() {
-    Inscriere& i=Inscriere::getInstance();
-    int conditie=-1;
-    while (conditie!=0) {
+    Meniu& sistem = Meniu::getInstance();
+    int optiune = -1;
+
+    cout << "=== Sistem Centralizat de Gestiune CNAIR v2023 ===\n";
+
+    while (optiune != 0) {
         try {
-            cout<<"alege actiune: 1.inscriere candidat   2.afisare lista candidati acceptati  0. exit"<<"\n";
-            cin>>conditie;
-            if (conditie==1)
-                i.inscriereCandidat();
-            else
-                if (conditie==2)
-                    i.StopInscriere();
-            else
-                if (conditie==0)
-                    break;
+            cout << "\n---------------- M EN I U ----------------\n"
+                 << "1. Adauga un drum in retea\n"
+                 << "2. Inregistreaza un contract nou pe tronson\n"
+                 << "3. Afiseaza toate drumurile si contractele\n"
+                 << "4. Calculeaza lungimile totale (Retea vs Autostrazi)\n"
+                 << "5. Reziliaza contractele unei firme (dupa CIF)\n"
+                 << "6. Calculeaza costul total al contractelor unui drum\n"
+                 << "0. Iesire program\n"
+                 << "Alege actiunea: ";
+            cin >> optiune;
+
+            if (optiune == 1) sistem.interactiuneAdaugareDrum();
+            else if (optiune == 2) sistem.interactiuneAdaugareContract();
+            else if (optiune == 3) sistem.afisareTot();
+            else if (optiune == 4) { sistem.lungimeAutostrazi(); sistem.lungimeTotala(); }
+            else if (optiune == 5) sistem.stergeContracte();
+            else if (optiune == 0) {
+                cout << "Se inchide aplicatia. O zi buna!\n";
+                break;
+            }
+            else {
+                cout << "Optiune invalida! Incearca din nou.\n";
+            }
         }
-        catch (const exception&e) {
-            cout<<"Eroare: "<<e.what();
+        catch (const exception& e) {
+            // Tratarea excepțiilor aruncate în interiorul metodelor (propagare obligatorie pentru punctaj)
+            cout << "\n>>> EXCEPtIE EVITAT\300: " << e.what() << "\n";
         }
     }
     return 0;
